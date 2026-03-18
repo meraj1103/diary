@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aesthetic Diary</title>
+    <link rel="stylesheet" href="/style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Orbitron:wght@400..900&display=swap"
+        rel="stylesheet">
+    <link rel="manifest" href="/manifest.json">
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('Service Worker registered'))
+                    .catch(err => console.log('Service Worker registration failed', err));
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <div class="controls" id="main-controls">
+        <button class="toggle-ui-btn" id="toggle-ui" title="Toggle Controls">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="toggle-icon"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="controls-content">
+            <button id="close-btn" class="upload-btn">Close Diary</button>
+            <label for="photo-upload" class="upload-btn">Add Photo</label>
+            <input type="file" id="photo-upload" accept="image/*" style="display: none;" multiple>
+            <button id="highlight-btn" class="upload-btn" title="Highlight Selected Text">Highlight</button>
+            <span class="instruction">Or copy & paste an image directly!</span>
+            <div class="pagination-controls">
+                <button id="prev-page" class="nav-btn" disabled>&#8592; Prev</button>
+                <div class="indicator-wrapper">
+                    <span id="page-indicator">Page 1-2</span>
+                    <span id="save-status" class="save-status"></span>
+                </div>
+                <button id="next-page" class="nav-btn">Next &#8594;</button>
+            </div>
+            <button id="settings-btn" class="upload-btn settings-btn" title="Settings">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Diary Settings</h2>
+                <button id="close-settings" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-content">
+                <div class="setting-group">
+                    <label>App Background</label>
+                    <input type="file" id="bg-upload" accept="image/*">
+                    <button id="reset-bg" class="action-btn">Reset Default Background</button>
+                </div>
+                <div class="setting-group">
+                    <label>Book Cover</label>
+                    <input type="file" id="cover-upload" accept="image/*">
+                    <button id="reset-cover" class="action-btn">Reset Default Cover</button>
+                </div>
+                <div class="setting-group">
+                    <label>Font Style</label>
+                    <select id="font-select">
+                        <option value="'Want Woo', 'Caveat', cursive">Want Woo (Default)</option>
+                        <option value="'Playfair Display', serif">Playfair Display</option>
+                        <option value="'Caveat', cursive">Caveat</option>
+                        <option value="Arial, sans-serif">Arial</option>
+                        <option value="'Times New Roman', serif">Times New Roman</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Font Size</label>
+                    <input type="range" id="font-size" min="16" max="64" value="32">
+                    <span id="font-size-val">32px</span>
+                </div>
+                <div class="setting-group">
+                    <label>Text Color</label>
+                    <input type="color" id="text-color" value="#ffffff">
+                </div>
+                <div class="setting-group">
+                    <label>Highlight Color</label>
+                    <input type="color" id="highlight-color" value="#ffffff">
+                </div>
+                <button id="save-settings" class="upload-btn">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Background decorative elements -->
+    <div class="ambient-light"></div>
+
+    <div class="book-container">
+        <div class="book" id="book">
+            <!-- Right Page (Back of the book) -->
+            <div class="page right-page ruled-paper" id="right-page">
+                <div class="page-content" id="right-page-content">
+                    <!-- Dynamic writing area and images appended here via JS -->
+                </div>
+            </div>
+
+            <!-- Door (Cover + Left Page) -->
+            <div class="door" id="door">
+                <!-- Left Page (Inside cover) -->
+                <div class="page left-page ruled-paper" id="left-page">
+                    <div class="page-content" id="left-page-content">
+                        <!-- Dynamic writing area and images appended here via JS -->
+                    </div>
+                </div>
+                <!-- Front Cover -->
+                <div class="page cover front">
+                    <div class="spine-texture"></div>
+                    <h1>Define Yourself</h1>
+                    <p>Can you ?</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/script.js"></script>
+</body>
+
+</html>
